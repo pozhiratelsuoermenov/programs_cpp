@@ -1,0 +1,146 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+
+using namespace std;
+
+void menu(int& k) {
+	cout << "zapolnite massiv 3 x 6" << endl;
+	cout << "1) cherez file" << endl;
+	cout << "2) v ruchnuyu" << endl;
+	cin >> k;
+	cout << endl;
+}
+void file(int(&mass)[3][6]) {
+	ifstream f1;
+	string path;
+
+	cout << "vvedite nazvanie file" << endl;
+	cin >> path;
+
+	f1.open(path + ".txt"); //ishet file1 pod nazvaniem read.txt
+
+	//uslovie otkritiya (esli on ne otkryt to vivod "file not found", esli otkryt "file opened" i ravota s faylom)
+	if (!f1.is_open())
+	{
+		cout << "file not found" << endl;
+	}
+	else {
+		cout << "file opened" << endl;
+
+		//poka file otrit
+		while (!f1.eof()) {
+
+			//schitivaet kazhdoe slovo
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 6; j++) {
+					f1 >> mass[i][j];
+				}
+			}
+		}
+	}
+	f1.close();
+}
+void ruka(int& k1) {
+	cout << "1) vvesti vse znach" << endl;
+	cout << "2) vvesti opredelennie znach" << endl;
+	cin >> k1;
+}
+void ruka_all(int(&mass)[3][6]) {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 6; j++) {
+			cout << "vvedite mass[" << i << "][" << j << "]:  ";
+			cin >> mass[i][j];
+		}
+	}
+	cout << endl;
+} 
+void ruka_opred(int(&mass)[3][6]) {
+	int a, b, kol;
+	cout << "skolko znach vi zaoplnite?" << endl;
+	cin >> kol;
+	for (int i = 0; i < kol; i++) {
+		cout << "vvedite kakoe a and b, gde mass[a][b]:  ";
+		cin >> a;
+		cin >> b;
+		cout << "vvedite mass[" << a << "][" << b << "]:  ";
+		cin >> mass[a][b];
+	}
+	
+	cout << endl;
+	
+}
+
+void schet(int(&mass)[3][6], int& null,int&minus,int&plus) {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 6; j++) {
+			if (mass[i][j] == 0) {
+				null++; //нули
+			}
+			if (mass[i][j] < 0) {
+				minus++; //отрицательные числа
+			}
+			if (mass[i][j] > 0) {
+				plus++; //положительные числа
+			}
+		}
+	}
+}
+
+void print(int(&mass)[3][6]) {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 6; j++) {
+			cout << mass[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
+int main() {
+	int k;
+	menu(k); //вывод меню
+
+	int mass[3][6] = { 0 }; //создаем массив и обнуляем ее
+
+	//заполняем массив
+	if (k == 1)
+	{
+		//!!! важно знать !!!
+		//файл должен быть в одной папке с прогой
+		//в файле должен быть заполнен весь массив (пустые значения = 0
+
+		file(mass);
+	}
+	if (k == 2) {
+		int k1;
+		ruka(k1);
+		if (k1 == 1) {
+			ruka_all(mass);
+		}
+		if (k1 == 2) {
+			ruka_opred(mass);
+		}
+	}
+
+	int null = 0;
+	int plus = 0;
+	int minus = 0;
+
+	schet(mass, null, minus, plus); //считваю кол-во нулей, положительных чисел, отрицательных чисел
+
+	print(mass);//вывод на экран самого массива и отчета
+	ofstream f2;
+	f2.open("massiv.txt"); //открываю файл
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 6; j++) {
+			f2 << mass[i][j] << " ";
+		}
+		f2 << endl;
+	}
+	f2.close(); //закрываю файл
+
+	f2.open("otchet.txt"); //открыва. файл
+	f2 << "kol-vo nuley:  " << null << endl;
+	f2 << "kol-vo polozhitelnykh chisel:  " << plus << endl;
+	f2 << "kol-vo otricatelnykh chisel:  " << minus << endl;
+	f2.close(); //закрываю файл
+}
